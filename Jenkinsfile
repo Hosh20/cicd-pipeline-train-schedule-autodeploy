@@ -4,7 +4,6 @@ pipeline {
         //be sure to replace "willbla" with your own Docker Hub username
         DOCKER_IMAGE_NAME = "hosh20/train-schedule"
         CANARY_REPLICAS = 0
-            
     }
     stages {
         stage('Build') {
@@ -61,7 +60,7 @@ pipeline {
             }
             steps {
                 script {
-                    sleep (time: 10)
+                    sleep (time: 5)
                     def response = httpRequest (
                         url: "http://$KUBE_MASTER_IP:8081/",
                         timeout: 30
@@ -76,16 +75,8 @@ pipeline {
             when {
                 branch 'master'
             }
-            environment { 
-                CANARY_REPLICAS = 0
-            }
             steps {
                 milestone(1)
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube-canary.yml',
-                    enableConfigSubstitution: true
-                )
                 kubernetesDeploy(
                     kubeconfigId: 'kubeconfig',
                     configs: 'train-schedule-kube.yml',
@@ -94,8 +85,8 @@ pipeline {
             }
         }
     }
-    post{
-    cleanup {
+    post {
+        cleanup {
             kubernetesDeploy (
                 kubeconfigId: 'kubeconfig',
                 configs: 'train-schedule-kube-canary.yml',
