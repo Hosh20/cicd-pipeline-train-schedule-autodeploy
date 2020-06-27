@@ -94,6 +94,7 @@ pipeline {
             }
         }
     }
+    post{
     cleanup {
             kubernetesDeploy (
                 kubeconfigId: 'kubeconfig',
@@ -101,4 +102,5 @@ pipeline {
                 enableConfigSubstitution: true
             )
         }
+    }
 }
